@@ -11,7 +11,7 @@
   ],
   "author": "Aaron Larner",
   "license": "ISC",
-  "devDependencies": {
+  "dependencies": {
     "yeoman-generator": "^0.20.1"
   }
 }
