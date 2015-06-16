@@ -55,17 +55,17 @@ module.exports = generators.Base.extend({
 	directories: function() {
 		this.fs.copyTpl(
 			this.templatePath('.gitkeep'),
-			this.destinationPath('./scripts/models'),
+			this.destinationPath('./scripts/models/.gitkeep'),
 			{}
 		);
 		this.fs.copyTpl(
 			this.templatePath('.gitkeep'),
-			this.destinationPath('./scripts/collections'),
+			this.destinationPath('./scripts/collections/.gitkeep'),
 			{}
 		);
 		this.fs.copyTpl(
 			this.templatePath('.gitkeep'),
-			this.destinationPath('./scripts/components'),
+			this.destinationPath('./scripts/components/.gitkeep'),
 			{}
 		);
 	}
