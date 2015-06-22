@@ -6,6 +6,13 @@ module.exports = generators.Base.extend({
 		// Calling the super constructor is important so our generator is correctly set up
 		generators.Base.apply(this, arguments);
 	},
+	packagejson: function() {
+		this.fs.copyTpl(
+			this.templatePath('package.json'),
+			this.destinationPath('./package.json'),
+			{}
+		);
+	},
 	dependencies: function() {
 		this.npmInstall([
 			'gulp',
