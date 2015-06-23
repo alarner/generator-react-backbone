@@ -7,6 +7,7 @@ var gutil = require('gulp-util');
 var sourcemaps = require('gulp-sourcemaps');
 var assign = require('lodash.assign');
 var babelify = require('babelify');
+var webserver = require('gulp-webserver');
 
 // add custom browserify options here
 var customOpts = {
@@ -19,6 +20,21 @@ var b = watchify(browserify(opts).transform(babelify));
 gulp.task('js', bundle); // so you can run `gulp js` to build the file
 b.on('update', bundle); // on any dep update, runs the bundler
 b.on('log', gutil.log); // output build logs to terminal
+
+gulp.task('webserver', function() {
+	gulp.src('./')
+	.pipe(webserver({
+		fallback:   'index.html',
+		livereload: true,
+		directoryListing: {
+			enable: false,
+			path: './'
+		},
+		open: true
+	}));
+});
+
+gulp.task('serve', ['js', 'webserver']);
 
 function bundle() {
 	return b.bundle()

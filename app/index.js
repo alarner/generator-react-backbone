@@ -23,7 +23,8 @@ module.exports = generators.Base.extend({
 			'gulp-util',
 			'gulp-sourcemaps',
 			'lodash.assign',
-			'babelify'
+			'babelify',
+			'gulp-webserver'
 		], { 'saveDev': true });
 		this.npmInstall([
 			'react',
