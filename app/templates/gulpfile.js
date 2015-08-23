@@ -15,6 +15,10 @@ var minimist = require('minimist');
 var prompt = require('gulp-prompt');
 var rimraf = require('gulp-rimraf');
 var uglify = require('gulp-uglify');
+var minifyCss = require('gulp-minify-css');
+var sass = require('gulp-sass');
+var rename = require('gulp-rename');
+var imagemin = require('gulp-imagemin');
 
 // add custom browserify options here
 var customOpts = {
@@ -41,7 +45,9 @@ gulp.task('webserver', function() {
 	}));
 });
 
-gulp.task('serve', ['js-bundle', 'webserver']);
+gulp.task('serve', ['js-bundle', 'webserver', 'serve-sass'], function() {
+	gulp.watch('styles/**/*.{scss,sass}', ['serve-sass']);
+});
 
 function bundle() {
 	return b.bundle()
@@ -57,7 +63,18 @@ function bundle() {
 	.pipe(gulp.dest('./scripts'));
 }
 
-gulp.task('build', ['clean', 'copy', 'js']);
+gulp.task('serve-sass', function() {
+	return gulp.src('styles/**/*.{scss,sass}')
+	.pipe(rename(function(p) {
+		p.extname += p.extname;
+	}))
+	.pipe(sass({
+		errLogToConsole: true
+	}))
+	.pipe(gulp.dest(path.join('styles')));
+});
+
+gulp.task('build', ['clean', 'copy', 'js', 'css', 'sass', 'images']);
 
 gulp.task('clean', function(cb) {
 	var argv = validateCli();
@@ -69,7 +86,8 @@ gulp.task('clean', function(cb) {
 
 gulp.task('copy', ['clean'], function() {
 	var argv = validateCli();
-	return gulp.src(['**/*']).pipe(gulp.dest(argv.o));
+	return gulp.src(['**/*', '!styles/**/*.scss', '!styles/**/*.sass'])
+	.pipe(gulp.dest(argv.o));
 });
 
 gulp.task('js', ['copy'], function() {
@@ -89,6 +107,50 @@ gulp.task('js', ['copy'], function() {
 	p.pipe(gulp.dest(path.join(argv.o, 'scripts')));
 
 	return p;
+});
+
+gulp.task('css', ['copy'], function() {
+	var argv = validateCli();
+
+	if(!argv.min) {
+		return false;
+	}
+
+	return gulp.src('styles/**/*.css')
+	.pipe(minifyCss({compatibility: 'ie8'}))
+	.pipe(gulp.dest(path.join(argv.o, 'styles')));
+});
+
+gulp.task('sass', ['copy'], function() {
+	var argv = validateCli();
+
+	var pi = gulp.src('styles/**/*.{scss,sass}')
+	.pipe(rename(function(p) {
+		p.extname += p.extname;
+	}))
+	.pipe(sass({
+		errLogToConsole: true
+	}));
+	if(argv.min) {
+		pi.pipe(minifyCss({compatibility: 'ie8'}));
+	}
+	pi.pipe(gulp.dest(path.join(argv.o, 'styles')));
+
+	return pi;
+});
+
+gulp.task('images', ['copy'], function() {
+	var argv = validateCli();
+
+	if(!argv.min) {
+		return false;
+	}
+
+	return gulp.src('images/**/*')
+    .pipe(imagemin({
+        progressive: true
+    }))
+    .pipe(gulp.dest(path.join(argv.o, 'images')));
 });
 
 function validateCli() {

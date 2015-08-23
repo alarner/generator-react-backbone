@@ -29,7 +29,11 @@ module.exports = generators.Base.extend({
 			'minimist',
 			'gulp-prompt',
 			'gulp-rimraf',
-			'gulp-uglify'
+			'gulp-uglify',
+			'gulp-minify-css',
+			'gulp-sass',
+			'gulp-rename',
+			'gulp-imagemin'
 		], { 'saveDev': true });
 		// this.npmInstall([
 		// 	'react',
