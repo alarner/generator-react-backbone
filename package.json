@@ -1,5 +1,5 @@
 {
-  "name": "generator-react-backbone",
+  "name": "generator-tiyfe",
   "version": "1.0.0",
   "description": "A generator to set up a basic react / backbone project.",
   "main": "index.js",

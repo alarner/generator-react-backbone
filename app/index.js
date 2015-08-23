@@ -1,3 +1,4 @@
+'use strict';
 var generators = require('yeoman-generator');
 
 module.exports = generators.Base.extend({
@@ -23,13 +24,14 @@ module.exports = generators.Base.extend({
 			'gulp-util',
 			'gulp-sourcemaps',
 			'lodash.assign',
-			'babelify'
+			'babelify',
+			'gulp-webserver'
 		], { 'saveDev': true });
-		this.npmInstall([
-			'react',
-			'jquery',
-			'backbone'
-		], { 'save': true });
+		// this.npmInstall([
+		// 	'react',
+		// 	'jquery',
+		// 	'backbone'
+		// ], { 'save': true });
 	},
 	indexfile: function() {
 		this.fs.copyTpl(
@@ -73,6 +75,11 @@ module.exports = generators.Base.extend({
 		this.fs.copyTpl(
 			this.templatePath('.gitkeep'),
 			this.destinationPath('./scripts/components/.gitkeep'),
+			{}
+		);
+		this.fs.copyTpl(
+			this.templatePath('.gitkeep'),
+			this.destinationPath('./images'),
 			{}
 		);
 	}
