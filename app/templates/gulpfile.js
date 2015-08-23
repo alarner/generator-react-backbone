@@ -9,6 +9,12 @@ var sourcemaps = require('gulp-sourcemaps');
 var assign = require('lodash.assign');
 var babelify = require('babelify');
 var webserver = require('gulp-webserver');
+var path = require('path');
+var minimist = require('minimist');
+
+var prompt = require('gulp-prompt');
+var rimraf = require('gulp-rimraf');
+var uglify = require('gulp-uglify');
 
 // add custom browserify options here
 var customOpts = {
@@ -18,7 +24,7 @@ var customOpts = {
 var opts = assign({}, watchify.args, customOpts);
 var b = watchify(browserify(opts).transform(babelify));
 
-gulp.task('js', bundle); // so you can run `gulp js` to build the file
+gulp.task('js-bundle', bundle); // so you can run `gulp js` to build the file
 b.on('update', bundle); // on any dep update, runs the bundler
 b.on('log', gutil.log); // output build logs to terminal
 
@@ -35,7 +41,7 @@ gulp.task('webserver', function() {
 	}));
 });
 
-gulp.task('serve', ['js', 'webserver']);
+gulp.task('serve', ['js-bundle', 'webserver']);
 
 function bundle() {
 	return b.bundle()
@@ -51,4 +57,44 @@ function bundle() {
 	.pipe(gulp.dest('./scripts'));
 }
 
-// gulp.task('build', function)
+gulp.task('build', ['clean', 'copy', 'js']);
+
+gulp.task('clean', function(cb) {
+	var argv = validateCli();
+
+	return gulp.src(argv.o, {read: false})
+	.pipe(prompt.confirm('The output directory "'+path.join(__dirname, argv.o)+'" will be removed. Are you sure you want to do this?'))
+	.pipe(rimraf());
+});
+
+gulp.task('copy', ['clean'], function() {
+	var argv = validateCli();
+	return gulp.src(['**/*']).pipe(gulp.dest(argv.o));
+});
+
+gulp.task('js', ['copy'], function() {
+	var argv = validateCli();
+
+	var p = browserify('scripts/main.js', { debug: true })
+	.transform(babelify)
+	.bundle()
+	.pipe(source('bundle.js'))
+	.pipe(buffer())
+	.on('error', function (err) { console.log('Error : ' + err.message); });
+
+	if(argv.min) {
+		p.pipe(uglify());
+	}
+
+	p.pipe(gulp.dest(path.join(argv.o, 'scripts')));
+
+	return p;
+});
+
+function validateCli() {
+	var argv = minimist(process.argv.slice(2));
+	if(!argv.o) {
+		throw 'You must specify and output directory for `gulp deploy`. Format: `gulp deploy -o outputdir [--minify]`';
+	}
+	return argv;
+}

@@ -1,3 +1,1 @@
-var React = require('react');
-
-console.log('application running');
+'use strict';

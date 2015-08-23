@@ -25,7 +25,11 @@ module.exports = generators.Base.extend({
 			'gulp-sourcemaps',
 			'lodash.assign',
 			'babelify',
-			'gulp-webserver'
+			'gulp-webserver',
+			'minimist',
+			'gulp-prompt',
+			'gulp-rimraf',
+			'gulp-uglify'
 		], { 'saveDev': true });
 		// this.npmInstall([
 		// 	'react',
@@ -79,7 +83,12 @@ module.exports = generators.Base.extend({
 		);
 		this.fs.copyTpl(
 			this.templatePath('.gitkeep'),
-			this.destinationPath('./images'),
+			this.destinationPath('./images/.gitkeep'),
+			{}
+		);
+		this.fs.copyTpl(
+			this.templatePath('.gitkeep'),
+			this.destinationPath('./styles/.gitkeep'),
 			{}
 		);
 	}
